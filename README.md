@@ -4,6 +4,8 @@ Offline-first desktop app with auto suggestion and auto correct feature to help 
 
 ## Libraries and packages
 
+**App**
+
 Packaged using [Electron vite](https://github.com/alex8088/electron-vite) \
 Electron\
 Electron builder\
@@ -11,6 +13,10 @@ React\
 Typescript\
 Vite\
 Eslint + prettier
+
+**server**
+
+python
 
 ## Project Setup
 
@@ -46,3 +52,11 @@ Currently only supports English keyboard layouts
 ## License
 
 GNU GPL v3
+
+## Roadmap
+
+- Finalize the project structure
+- setup dev scripts at root level to start the app with python server
+- setup build scripts to package python server with app
+- making sure FE application works as intended and then optimize the backend
+- finetune the Python server
