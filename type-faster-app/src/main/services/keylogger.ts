@@ -3,7 +3,7 @@ import { ipcMain } from 'electron'
 
 import captureCurrentApplication from './screen-capture'
 import { getText } from './ocr'
-import suggestionSocketClient from './suggestion'
+import suggestionSocketClient from './suggestion-client'
 
 // TODO: 1. fix the textBuffer issue - image is captured differently
 class KeyboardListener {

@@ -55,8 +55,9 @@ GNU GPL v3
 
 ## Roadmap
 
-- Finalize the project structure
-- setup dev scripts at root level to start the app with python server
+- ~~Finalize the project structure~~
+- ~~setup dev scripts at root level to start the app with python server~~
+- UI: show suggestions ahead in the screen (ongoing)
 - setup build scripts to package python server with app
 - making sure FE application works as intended and then optimize the backend
-- finetune the Python server
+- finetune the Python server for suggestions and auto-correct
