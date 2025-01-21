@@ -59,35 +59,47 @@ def autocorrect_text(input_text):
         return input_text  # Return original text in case of error
 
 
+def handle_client_connection(conn, addr):
+    """
+    Handle communication with the connected client.
+
+    Args:
+        conn (socket.socket): The socket object for the client connection.
+        addr (tuple): The address of the client.
+    """
+    with conn:
+        print(f"Connected by {addr}")
+        while True:
+            data = conn.recv(1024).decode('utf-8').strip()
+            if not data:
+                break
+
+            print(f"Received: {data}")
+
+            if data.startswith("PREDICT:"):
+                text = data[len("PREDICT:"):]
+                response = generate_prediction(text)
+                response = f"PREDICTION:{response}"
+            elif data.startswith("AUTOCORRECT:"):
+                text = data[len("AUTOCORRECT:"):]
+                response = autocorrect_text(text)
+                response = f"CORRECTED:{response}"
+            else:
+                response = "ERROR: Unknown command. Use PREDICT: or AUTOCORRECT:"
+
+            conn.sendall(response.encode('utf-8'))
+            print(f"Sent: {response}")
+
+
 def main():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
         server_socket.bind((HOST, PORT))
         server_socket.listen(1)
         print(f"Server running on {HOST}:{PORT}")
 
-        conn, addr = server_socket.accept()
-        with conn:
-            print(f"Connected by {addr}")
-            while True:
-                data = conn.recv(1024).decode('utf-8').strip()
-                if not data:
-                    break
-
-                print(f"Received: {data}")
-
-                if data.startswith("PREDICT:"):
-                    text = data[len("PREDICT:"):]
-                    response = generate_prediction(text)
-                    response = f"PREDICTION:{response}"
-                elif data.startswith("AUTOCORRECT:"):
-                    text = data[len("AUTOCORRECT:"):]
-                    response = autocorrect_text(text)
-                    response = f"CORRECTED:{response}"
-                else:
-                    response = "ERROR: Unknown command. Use PREDICT: or AUTOCORRECT:"
-
-                conn.sendall(response.encode('utf-8'))
-                print(f"Sent: {response}")
+        while True:
+            conn, addr = server_socket.accept()
+            handle_client_connection(conn, addr)  # Handle each client connection in a new function
 
 if __name__ == "__main__":
     main()

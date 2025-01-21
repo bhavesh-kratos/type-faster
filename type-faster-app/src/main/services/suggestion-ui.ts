@@ -1,11 +1,11 @@
-import { screen, app, BrowserWindow } from 'electron'
-import { GlobalKeyboardListener } from 'node-global-key-listener'
+import { app, BrowserWindow, ipcMain } from 'electron'
+import KeyboardListener from './keylogger'
 
 let overlayWindow
-let typingBuffer = ''
-let suggestionTimeout
+let keyboardListener
 
 app.on('ready', () => {
+  // Create overlay window
   overlayWindow = new BrowserWindow({
     width: 600,
     height: 50,
@@ -14,7 +14,6 @@ app.on('ready', () => {
     alwaysOnTop: true,
     skipTaskbar: true,
     focusable: false,
-    hasShadow: false,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -23,7 +22,7 @@ app.on('ready', () => {
 
   overlayWindow.loadURL(`data:text/html;charset=utf-8,
     <html>
-      <body style="margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0); height: 100%; font-size: 16px;">
+      <body style="margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0);">
         <div id="suggestion-box" style="
           background: rgba(0, 0, 0, 0.8);
           color: white;
@@ -47,54 +46,20 @@ app.on('ready', () => {
       </body>
     </html>`)
 
-  overlayWindow.setIgnoreMouseEvents(true) // ensure overlay doesn't intercept input
-  overlayWindow.hide() // hide overlay initially
+  overlayWindow.setIgnoreMouseEvents(true)
+  overlayWindow.hide()
 
-  const gkl = new GlobalKeyboardListener()
+  // Initialize KeyboardListener
+  keyboardListener = new KeyboardListener()
 
-  // TODO: replace with keyboardlistener
-  gkl.addListener((e) => {
-    if (e.state === 'DOWN') {
-      const key = e.name
-
-      if (key?.toLowerCase() === 'backspace') {
-        typingBuffer = typingBuffer.slice(0, -1)
-      } else if (key.length === 1) {
-        typingBuffer += key
-      }
-
-      clearTimeout(suggestionTimeout)
-
-      // show suggestions after a 100ms delay
-      suggestionTimeout = setTimeout(() => {
-        const suggestion = getSuggestion(typingBuffer)
-
-        const { width } = screen.getPrimaryDisplay().workAreaSize
-
-        overlayWindow.setBounds({
-          x: Math.floor((width - 600) / 2),
-          y: 50,
-          width: 600,
-          height: 50,
-        })
-
-        overlayWindow.webContents.send('update-suggestions', suggestion)
-
-        // show the overlay without taking focus
-        overlayWindow.showInactive()
-      }, 100)
-    }
+  // Forward suggestions to overlay
+  ipcMain.on('update-suggestions', (event, suggestion) => {
+    overlayWindow.webContents.send('update-suggestions', suggestion)
+    overlayWindow.showInactive()
   })
 })
 
 app.on('window-all-closed', () => {
+  keyboardListener.stopListening()
   app.quit()
 })
-
-/**
- * TODO: replace with actual suggestions
- */
-function getSuggestion(text) {
-  if (!text) return ''
-  return `You typed: ${text}?`
-}
