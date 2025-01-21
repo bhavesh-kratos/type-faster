@@ -73,9 +73,6 @@ class KeyboardListener {
       }
 
       if (isAlphaNumericOrSymbol) {
-        console.log(
-          `\n\n\n\n\n\n------ Text Bufferr-----:\n\n\n ${this.textBuffer}\n\n\n\n\n----------------------\n\n`,
-        )
         this.appendToBuffer(event.name)
       } else {
         this.resetBuffer()
