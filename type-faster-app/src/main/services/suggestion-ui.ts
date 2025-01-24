@@ -1,10 +1,12 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, screen } from 'electron'
 import KeyboardListener from './keylogger'
 
 let overlayWindow
 let keyboardListener
 
 app.on('ready', () => {
+  const { width } = screen.getPrimaryDisplay().workAreaSize
+
   // Create overlay window
   overlayWindow = new BrowserWindow({
     width: 600,
@@ -18,6 +20,8 @@ app.on('ready', () => {
       nodeIntegration: true,
       contextIsolation: false,
     },
+    x: Math.floor((width - 600) / 2),
+    y: 50,
   })
 
   overlayWindow.loadURL(`data:text/html;charset=utf-8,
@@ -53,7 +57,8 @@ app.on('ready', () => {
   keyboardListener = new KeyboardListener()
 
   // Forward suggestions to overlay
-  ipcMain.on('update-suggestions', (event, suggestion) => {
+  ipcMain.on('update-suggestions', (suggestion) => {
+    console.log('Received suggestion: ', suggestion)
     overlayWindow.webContents.send('update-suggestions', suggestion)
     overlayWindow.showInactive()
   })
