@@ -9,6 +9,13 @@ import './services/suggestion-ui'
 import KeyboardListener from './services/keylogger'
 import icon from '../../resources/icon.png?asset'
 
+// debugging mode in dev env
+if (process.env.DEBUG === 'true') {
+  process.env.ELECTRON_ENABLE_LOGGING = '1'
+  process.env.ELECTRON_ENABLE_STACK_DUMPING = '1'
+  console.log('Debugging enabled.')
+}
+
 // 1. Auto launch the app
 const autoLauncher = new AutoLaunch({
   name: 'Type Faster',
