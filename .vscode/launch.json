@@ -1,0 +1,36 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Start app in debug mode",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/type-faster-app/node_modules/.bin/electron",
+      "args": ["."],
+      "outputCapture": "std",
+      "runtimeExecutable": null,
+      "cwd": "${workspaceFolder}/type-faster-app",
+      "sourceMaps": true,
+      "protocol": "inspector",
+      "env": {
+        "ELECTRON_ENABLE_LOGGING": "1",
+        "ELECTRON_ENABLE_STACK_DUMPING": "1"
+      },
+      "windows": {
+        "program": "${workspaceFolder}/type-faster-app/node_modules/.bin/electron.cmd"
+      }
+    },
+    {
+      "name": "Attach to Main Process",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "protocol": "inspector",
+      "restart": false,
+      "timeout": 10000,
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/type-faster-app/out/main/**/*.js"],
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+}

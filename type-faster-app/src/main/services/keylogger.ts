@@ -3,9 +3,8 @@ import { ipcMain } from 'electron'
 
 import captureCurrentApplication from './screen-capture'
 import { getText } from './ocr'
-import suggestionSocketClient from './suggestion'
+import suggestionSocketClient from './suggestion-client'
 
-// TODO: 1. fix the textBuffer issue - image is captured differently
 class KeyboardListener {
   private gkl: GlobalKeyboardListener
   private textBuffer: string = ''
@@ -48,8 +47,6 @@ class KeyboardListener {
     if (this.isDetecting) return
 
     if (event.state === 'DOWN') {
-      console.log(`Key pressed: ${event.name}`)
-
       const isAlphaNumericOrSymbol =
         /^[\w\s\p{P}]$/u.test(event.name) ||
         event.name.toLowerCase() === 'backspace' ||
@@ -73,14 +70,20 @@ class KeyboardListener {
       }
 
       if (isAlphaNumericOrSymbol) {
-        console.log(
-          `\n\n\n\n\n\n------ Text Bufferr-----:\n\n\n ${this.textBuffer}\n\n\n\n\n----------------------\n\n`,
-        )
         this.appendToBuffer(event.name)
+        this.sendBufferForSuggestions() // Send text buffer for suggestions
       } else {
         this.resetBuffer()
       }
     }
+  }
+
+  private sendBufferForSuggestions(): void {
+    if (!this.socketClient) return
+
+    this.socketClient.getSuggestions(this.textBuffer, (suggestion: string) => {
+      ipcMain.emit('update-suggestions', suggestion)
+    })
   }
 
   private startListening(): void {
@@ -96,7 +99,6 @@ class KeyboardListener {
   }
 
   private resetBuffer(): void {
-    console.log('Non-alphanumeric key pressed. Resetting text buffer.')
     this.isCapturing = false
     this.textBuffer = ''
     this.initialEnvTextBuffer = ''
@@ -108,9 +110,6 @@ class KeyboardListener {
     try {
       const screenshot = await captureCurrentApplication()
       const extractedText = await getText(screenshot)
-      console.log(
-        `\n\n\n\n\n\n------Extracted Text-----: ${extractedText}\n\n\n\n\n----------------------\n\n`,
-      )
       return extractedText
     } catch (error) {
       console.error('Error capturing screenshot or extracting text:', error)

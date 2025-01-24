@@ -1,10 +1,6 @@
 #!/bin/bash
 
 # Start the backend server
-
-# Set the color for python logs to blue
-export PYTHONLOG_COLORIZE=1
-export PYTHONLOG_COLOR=32
 cd type-faster-BE
 echo "Starting backend server..."
 source suggest-poc/bin/activate

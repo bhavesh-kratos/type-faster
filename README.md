@@ -49,14 +49,23 @@ $ npm run build:linux
 
 Currently only supports English keyboard layouts
 
+## Supported devices
+
+MacOS and windows
+
+Currently tested only on MacOS
+
 ## License
 
 GNU GPL v3
 
 ## Roadmap
 
-- Finalize the project structure
-- setup dev scripts at root level to start the app with python server
-- setup build scripts to package python server with app
+- ~~Finalize the project structure~~
+- ~~setup dev scripts at root level to start the app with python server~~
+- ~~UI: show suggestions ahead in the screen~~
 - making sure FE application works as intended and then optimize the backend
-- finetune the Python server
+- finetune and optimize the Python server for suggestions and auto-correct
+- customization options in app and onboarding ui
+- setup build scripts to package python server with app
+- optimize the build size, processes memory consumption
