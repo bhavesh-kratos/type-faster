@@ -49,6 +49,12 @@ $ npm run build:linux
 
 Currently only supports English keyboard layouts
 
+## Supported devices
+
+MacOS and windows
+
+Currently tested only on MacOS
+
 ## License
 
 GNU GPL v3
